@@ -1,0 +1,193 @@
+import { mount } from "@vue/test-utils";
+import CalculatorForm from "@/components/CalculatorForm.vue";
+import vehicleService from "@/services/VehicleService";
+import { CalculateCarPriceResponse, ResultTableData } from "@/types/types";
+import { nextTick } from "vue";
+
+jest.mock("@/services/VehicleService");
+
+describe("CalculatorForm.vue", () => {
+  let wrapper: any;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+
+    wrapper = mount(CalculatorForm, {
+      props: {
+        resultTableData: null as ResultTableData | null,
+      },
+    });
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    // jest.spyOn(console, "error").mockImplementation(() => {});
+  });
+
+  it("should render the form", () => {
+    // Assert
+    expect(wrapper.find("form").exists()).toBe(true);
+  });
+
+  describe("vehicle price input", () => {
+    it("should reset vehiclePrice to 0 when a negative value is entered", async () => {
+      wrapper.vm.vehiclePrice = -500;
+      await nextTick();
+      expect(wrapper.vm.vehiclePrice).toBe(0);
+    });
+
+    it("should have an number input field with id 'vehicle-price' and class 'form-control'", () => {
+      // Arrange
+      const input = wrapper.find("#vehicle-price");
+
+      // Assert
+      expect(input.exists()).toBe(true);
+      expect(input.classes()).toContain("form-control");
+      expect(input.attributes("type")).toBe("number");
+    });
+
+    it("should not allow negative values in vehicle price", async () => {
+      // Arrange
+      const input = wrapper.find("#vehicle-price");
+
+      // Act
+      await input.setValue("-100");
+
+      // Assert
+      expect(input.element.value).toBe("0");
+    });
+
+    it("should have initial vehiclePrice value of 0", () => {
+      // Arrange
+      const input = wrapper.find("#vehicle-price");
+
+      // Assert
+      expect(input.element.value).toBe("0");
+    });
+
+    it("should update vehiclePrice when input value changes", async () => {
+      // Arrange
+      const input = wrapper.find("#vehicle-price");
+
+      // Act
+      await input.setValue(5000);
+
+      // Assert
+      expect(wrapper.vm.vehiclePrice).toBe(5000);
+    });
+
+    it("should call validatePrice on keydown event", async () => {
+      // Arrange
+      const input = wrapper.find("#vehicle-price");
+      const validatePriceSpy = jest.spyOn(wrapper.vm, "validatePrice");
+
+      // Act
+      await input.trigger("keydown");
+
+      // Assert
+      expect(validatePriceSpy).toHaveBeenCalled();
+    });
+
+    it("should update vehiclePrice when input changes", async () => {
+      // Arrange
+      const input = wrapper.find("#vehicle-price");
+
+      // Act
+      await input.setValue("50000");
+
+      // Assert
+      expect(wrapper.vm.vehiclePrice).toBe(50000);
+    });
+
+    it("should prevent entering multiple decimal points when there's at least one decimal", async () => {
+      const input = wrapper.find("#vehicle-price");
+
+      await input.setValue("12.0");
+      await input.trigger("keydown", { key: "." });
+
+      expect(input.element.value).toBe("12.0");
+    });
+  });
+
+  describe("vehicle type selection", () => {
+    it("should have initial selectedVehicleTypeId as null", () => {
+      expect(wrapper.vm.selectedVehicleTypeId).toBeNull();
+    });
+
+    it("should update selectedVehicleTypeId when a vehicle type is selected", async () => {
+      // Arrange: Populate vehicleTypes ref in the component
+      wrapper.vm.vehicleTypes = [
+        { id: 1, name: "Common" },
+        { id: 2, name: "Luxury" },
+      ];
+      await nextTick();
+
+      // Act
+      const select = wrapper.find("select#vehicle-type");
+      expect(select.exists()).toBe(true);
+      await select.setValue("2");
+      await nextTick();
+
+      // Assert
+      expect(wrapper.vm.selectedVehicleTypeId).toBe(2);
+    });
+
+    it("should reset vehiclePrice to 0 when a negative value is entered", async () => {
+      // Arrange & Act
+      wrapper.vm.vehiclePrice = -500;
+      await nextTick();
+
+      // Assert: Watcher should reset the value to 0
+      expect(wrapper.vm.vehiclePrice).toBe(0);
+    });
+  });
+
+  describe("form submission", () => {
+    it("should log an error if vehicle type is not found", async () => {
+      jest.spyOn(vehicleService, "fetchVehicleTypes").mockResolvedValue([]);
+
+      const consoleSpy = jest
+        .spyOn(console, "error")
+        .mockImplementation((message) => {
+          console.log("Captured error:", message); // ✅ Ensures error still logs
+        });
+
+      wrapper = mount(CalculatorForm, {
+        props: { resultTableData: null },
+      });
+
+      await nextTick();
+      await wrapper.find("button.submit-btn").trigger("click");
+
+      expect(consoleSpy).toHaveBeenCalledWith("Vehicle type not found");
+
+      consoleSpy.mockRestore();
+    });
+
+    it("should call calculatePrice when form is submitted", async () => {
+      // Arrange: Mock vehicleService.calculateCarPrice
+      const mockCalculateCarPrice = jest
+        .spyOn(vehicleService, "calculateCarPrice")
+        .mockResolvedValue({
+          percentageRate: { gst: 5 },
+          fixedTier: { admin: 500 },
+          fixedFee: { registration: 200 },
+          total: 12000,
+        } as CalculateCarPriceResponse);
+
+      wrapper.vm.vehicleTypes = [{ id: 1, name: "Common" }];
+      wrapper.vm.selectedVehicleTypeId = 1;
+      wrapper.vm.vehiclePrice = 10000;
+
+      await nextTick(); // Ensure Vue updates before proceeding
+
+      // Act
+      const submitButton = wrapper.find("button.submit-btn");
+      expect(submitButton.attributes("disabled")).toBeUndefined();
+      await submitButton.trigger("click");
+
+      // Assert
+      expect(mockCalculateCarPrice).toHaveBeenCalledWith(10000, 1);
+
+      // Cleanup mock
+      mockCalculateCarPrice.mockRestore();
+    });
+  });
+});
