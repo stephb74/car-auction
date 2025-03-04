@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<ruleset name="MyProject">
+    <rule ref="SlevomatCodingStandard\Sniffs\Functions\CognitiveComplexitySniff">
+        <properties>
+            <property name="maxComplexity" value="10"/>
+        </properties>
+    </rule>
+</ruleset>
