@@ -3,8 +3,7 @@
 $finder = (new PhpCsFixer\Finder())
     ->in(__DIR__.'/src')
     ->in(__DIR__.'/tests')
-    ->exclude('var')
-;
+    ->exclude('var');
 
 return (new PhpCsFixer\Config())
     ->setRules([
@@ -13,7 +12,7 @@ return (new PhpCsFixer\Config())
         'array_syntax'                => ['syntax' => 'short'],
         'binary_operator_spaces'      => ['default' => 'align_single_space_minimal'],
         'blank_line_before_statement' => [
-            'statements' => ['return']
+            'statements' => ['return'],
         ],
         'cast_spaces'       => ['space' => 'single'],
         'no_unused_imports' => true,
