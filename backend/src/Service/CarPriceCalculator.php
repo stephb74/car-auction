@@ -16,34 +16,79 @@ class CarPriceCalculator
     }
 
     /**
-     * @param float $vehiclePrice
+     * @param float $price
      * @param VehicleType $vehicleType
      * @return array<string, array<string, float>>
      */
-    public function calculateAll(float $vehiclePrice, VehicleType $vehicleType): array
+    public function calculateAll(float $price, VehicleType $vehicleType): array
     {
         return [
-            'feeRates' => $this->calculateFeeRates($vehiclePrice, $vehicleType),
+            'feeRates' => $this->calculateFeeRates($price, $vehicleType),
+            'fixedFees' => $this->calculateFixedFees(),
+            'fixedTierFees' => $this->calculateFixedTierFees($price),
         ];
     }
 
     /**
-     * @param float $vehiclePrice
+     * @param float $price
+     * @return array<string, float>
+     */
+    private function calculateFixedTierFees(float $price): array
+    {
+        $fixedTierFees = $this->feesRepository->findBy(['type' => 'fixedTier']);
+        $calculatedFees = [];
+
+        foreach ($fixedTierFees as $fee) {
+            $fixedTierFees = $fee->getFixedTierFees();
+
+            foreach ($fixedTierFees as $fixedTierFee) {
+                if ($this->amountIsBetween($price, $fixedTierFee->getMinAmount(), $fixedTierFee->getMaxAmount())) {
+                    $calculatedFees[$fee->getName()] = round($fixedTierFee->getAmount(), 2);
+                }
+            }
+        }
+
+        return $calculatedFees;
+    }
+
+    /**
+     * Calculate percentage rate fees for the given price and vehicle type.
+     * @param float $price
      * @param VehicleType $vehicleType
      * @return array<string, float>
      */
-    private function calculateFeeRates(float $vehiclePrice, VehicleType $vehicleType): array
+    private function calculateFeeRates(float $price, VehicleType $vehicleType): array
     {
-        $fees = $this->feesRepository->findBy(['type' => 'percentageRate']);
+        $percentageRateFees = $this->feesRepository->findBy(['type' => 'percentageRate']);
         $calculatedFees = [];
 
-        foreach ($fees as $fee) {
+        foreach ($percentageRateFees as $fee) {
             $feeRates = $fee->getPercentageFeeRates();
 
             foreach ($feeRates as $feeRate) {
                 if ($this->feeRateIsApplicable($feeRate, $vehicleType)) {
-                    $calculatedFees[$fee->getName()] = $this->capFeeRate($feeRate->getRate() * $vehiclePrice, $feeRate);
+                    $calculatedFees[$fee->getName()] = $this->capFeeRate($feeRate->getRate() * $price, $feeRate);
                 }
+            }
+        }
+
+        return $calculatedFees;
+    }
+
+    /**
+     * Calculate fixed fees.
+     * @return array<string, float>
+     */
+    private function calculateFixedFees(): array
+    {
+        $fees = $this->feesRepository->findBy(['type' => 'fixedFee']);
+        $calculatedFees = [];
+
+        foreach ($fees as $fee) {
+            $fixedFees = $fee->getFixedFees();
+
+            foreach ($fixedFees as $fixedFee) {
+                $calculatedFees[$fee->getName()] = $fixedFee->getAmount();
             }
         }
 
@@ -71,6 +116,7 @@ class CarPriceCalculator
     }
 
     /**
+     * Check if the fee rate is applicable to the vehicle type.
      * @param PercentageFeeRate $feeRate
      * @param VehicleType $vehicleType
      * @return bool
@@ -81,6 +127,7 @@ class CarPriceCalculator
     }
 
     /**
+     * Check if the price is between the min and max amount, which can both be null.
      * @param float $price
      * @param float|null $min
      * @param float|null $max

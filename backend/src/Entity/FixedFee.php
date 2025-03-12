@@ -20,6 +20,14 @@ class FixedFee
     #[ORM\Column]
     private ?float $amount = null;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=Fee::class, inversedBy="fixedFees")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    #[ORM\ManyToOne(targetEntity: Fee::class, inversedBy: 'fixedFees')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Fee $fee = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -52,6 +60,18 @@ class FixedFee
     public function setAmount(float $amount): static
     {
         $this->amount = $amount;
+
+        return $this;
+    }
+
+    public function getFee(): ?Fee
+    {
+        return $this->fee;
+    }
+
+    public function setFee(?Fee $fee): static
+    {
+        $this->fee = $fee;
 
         return $this;
     }

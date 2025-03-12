@@ -30,7 +30,7 @@ class PercentageFeeRateFixtures extends Fixture implements DependentFixtureInter
 
         foreach ($feeRates as $feeRate) {
             $feeRateEntity = new PercentageFeeRate();
-            $feeRateEntity->setFee($feeRate['feeId']);
+            $feeRateEntity->setFeeId($feeRate['feeId']);
             $feeRateEntity->setVehicleTypeId($feeRate['vehicleTypeId']);
             $feeRateEntity->setRate($feeRate['rate']);
             $feeRateEntity->setMinAmount($feeRate['minAmount']);

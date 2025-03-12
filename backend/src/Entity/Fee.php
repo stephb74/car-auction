@@ -28,9 +28,23 @@ class Fee
     #[ORM\OneToMany(targetEntity: PercentageFeeRate::class, mappedBy: 'fee')]
     private Collection $percentageFeeRates;
 
+    /**
+     * @var Collection<int, FixedFee>
+     */
+    #[ORM\OneToMany(targetEntity: FixedFee::class, mappedBy: 'fee')]
+    private Collection $fixedFees;
+
+    /**
+     * @var Collection<int, FixedTierFee>
+     */
+    #[ORM\OneToMany(targetEntity: FixedTierFee::class, mappedBy: 'fee')]
+    private Collection $fixedTierFees;
+
     public function __construct()
     {
         $this->percentageFeeRates = new ArrayCollection();
+        $this->fixedFees = new ArrayCollection();
+        $this->fixedTierFees = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -75,5 +89,21 @@ class Fee
     public function getPercentageFeeRates(): Collection
     {
         return $this->percentageFeeRates;
+    }
+
+    /**
+     * @return Collection<int, FixedFee>
+     */
+    public function getFixedFees(): Collection
+    {
+        return $this->fixedFees;
+    }
+
+    /**
+     * @return Collection<int, FixedTierFee>
+     */
+    public function getFixedTierFees(): Collection
+    {
+        return $this->fixedTierFees;
     }
 }
