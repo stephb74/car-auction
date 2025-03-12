@@ -3,6 +3,7 @@
 namespace App\DataFixtures;
 
 use App\Entity\FixedFee;
+use App\Enum\FeeName;
 use App\Repository\FeesRepository;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
@@ -19,14 +20,14 @@ class FixedFeeFixtures extends Fixture implements DependentFixtureInterface
 
     public function load(ObjectManager $manager): void
     {
-        $fee = $this->feesRepository->findOneBy(['name' => 'Storage Fee']);
+        $fee = $this->feesRepository->findOneBy(['name' => FeeName::STORAGE]);
 
         if (!$fee) {
             return;
         }
 
         $fixedFee = new FixedFee();
-        $fixedFee->setFeeId($fee->getId());
+        $fixedFee->setFee($fee);
         $fixedFee->setAmount(100.0);
         $manager->persist($fixedFee);
 

@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use App\Enum\FeeName;
+use App\Enum\FeeTypeName;
 use App\Repository\FeesRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -16,11 +18,11 @@ class Fee
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 50)]
-    private ?string $name = null;
+    #[ORM\Column(length: 50, enumType: FeeName::class)]
+    private ?FeeName $name = null;
 
-    #[ORM\Column(length: 50)]
-    private ?string $type = null;
+    #[ORM\Column(length: 50, enumType: FeeTypeName::class)]
+    private ?FeeTypeName $type = null;
 
     /**
      * @var Collection<int, PercentageFeeRate>
@@ -59,24 +61,24 @@ class Fee
         return $this;
     }
 
-    public function getName(): ?string
+    public function getName(): ?FeeName
     {
         return $this->name;
     }
 
-    public function setName(string $name): static
+    public function setName(FeeName $name): static
     {
         $this->name = $name;
 
         return $this;
     }
 
-    public function getType(): ?string
+    public function getType(): ?FeeTypeName
     {
         return $this->type;
     }
 
-    public function setType(string $type): static
+    public function setType(FeeTypeName $type): static
     {
         $this->type = $type;
 

@@ -15,6 +15,7 @@
   </component>
   <component name="PHPCodeSnifferOptionsConfiguration">
     <option name="highlightLevel" value="WARNING" />
+    <option name="showSniffs" value="true" />
     <option name="transferred" value="true" />
   </component>
   <component name="PhpCSFixer">
@@ -25,7 +26,8 @@
   </component>
   <component name="PhpCodeSniffer">
     <phpcs_settings>
-      <phpcs_by_interpreter asDefaultInterpreter="true" interpreter_id="afcc6883-64a7-400d-8bec-5c221bb008d2" timeout="30000" />
+      <phpcs_by_interpreter asDefaultInterpreter="true" interpreter_id="afcc6883-64a7-400d-8bec-5c221bb008d2" standards="MySource;PEAR;PSR1;PSR12;PSR2;Squiz;Zend" tool_path="/Users/stephanebrault/dev/lab/car-auction/backend/vendor/bin/phpcs" timeout="30000" />
+      <PhpCSConfiguration beautifier_path="$PROJECT_DIR$/vendor/bin/phpcbf" tool_path="$PROJECT_DIR$/vendor/bin/phpcs" />
     </phpcs_settings>
   </component>
   <component name="PhpIncludePathManager">
@@ -137,6 +139,9 @@
       <path value="$PROJECT_DIR$/vendor/symfony/monolog-bundle" />
       <path value="$PROJECT_DIR$/vendor/symfony/monolog-bridge" />
       <path value="$PROJECT_DIR$/vendor/monolog/monolog" />
+      <path value="$PROJECT_DIR$/vendor/squizlabs/php_codesniffer" />
+      <path value="$PROJECT_DIR$/vendor/slevomat/coding-standard" />
+      <path value="$PROJECT_DIR$/vendor/dealerdirect/phpcodesniffer-composer-installer" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="8.2" />

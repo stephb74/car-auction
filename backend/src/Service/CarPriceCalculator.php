@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Entity\PercentageFeeRate;
 use App\Entity\VehicleType;
+use App\Enum\FeeTypeName;
 use App\Repository\FeesRepository;
 
 class CarPriceCalculator
@@ -16,26 +17,34 @@ class CarPriceCalculator
     }
 
     /**
+     * Calculate all fees and total for the given price and vehicle type.
      * @param float $price
      * @param VehicleType $vehicleType
-     * @return array<string, array<string, float>>
+     * @return array<string, array<string, float>|float>
      */
     public function calculateAll(float $price, VehicleType $vehicleType): array
     {
+        $feeRates = $this->calculatePercentageRateFees($price, $vehicleType);
+        $fixedFees = $this->calculateFixedFees();
+        $fixedTierFees = $this->calculateFixedTierFees($price);
+        $total = $price + array_sum($feeRates) + array_sum($fixedFees) + array_sum($fixedTierFees);
+
         return [
-            'feeRates' => $this->calculateFeeRates($price, $vehicleType),
-            'fixedFees' => $this->calculateFixedFees(),
-            'fixedTierFees' => $this->calculateFixedTierFees($price),
+            FeeTypeName::PERCENTAGE_RATE->value => $feeRates,
+            FeeTypeName::FIXED_TIER->value => $fixedTierFees,
+            FeeTypeName::FIXED_FEE->value => $fixedFees,
+            'total' => round($total, 2),
         ];
     }
 
     /**
+     * Calculate fixed tier fees for the given price.
      * @param float $price
      * @return array<string, float>
      */
     private function calculateFixedTierFees(float $price): array
     {
-        $fixedTierFees = $this->feesRepository->findBy(['type' => 'fixedTier']);
+        $fixedTierFees = $this->feesRepository->findBy(['type' => FeeTypeName::FIXED_TIER]);
         $calculatedFees = [];
 
         foreach ($fixedTierFees as $fee) {
@@ -43,7 +52,7 @@ class CarPriceCalculator
 
             foreach ($fixedTierFees as $fixedTierFee) {
                 if ($this->amountIsBetween($price, $fixedTierFee->getMinAmount(), $fixedTierFee->getMaxAmount())) {
-                    $calculatedFees[$fee->getName()] = round($fixedTierFee->getAmount(), 2);
+                    $calculatedFees[$fee->getName()->value] = round($fixedTierFee->getAmount(), 2);
                 }
             }
         }
@@ -57,9 +66,9 @@ class CarPriceCalculator
      * @param VehicleType $vehicleType
      * @return array<string, float>
      */
-    private function calculateFeeRates(float $price, VehicleType $vehicleType): array
+    private function calculatePercentageRateFees(float $price, VehicleType $vehicleType): array
     {
-        $percentageRateFees = $this->feesRepository->findBy(['type' => 'percentageRate']);
+        $percentageRateFees = $this->feesRepository->findBy(['type' => FeeTypeName::PERCENTAGE_RATE]);
         $calculatedFees = [];
 
         foreach ($percentageRateFees as $fee) {
@@ -67,7 +76,7 @@ class CarPriceCalculator
 
             foreach ($feeRates as $feeRate) {
                 if ($this->feeRateIsApplicable($feeRate, $vehicleType)) {
-                    $calculatedFees[$fee->getName()] = $this->capFeeRate($feeRate->getRate() * $price, $feeRate);
+                    $calculatedFees[$fee->getName()->value] = $this->capFeeRate($feeRate->getRate() * $price, $feeRate);
                 }
             }
         }
@@ -81,14 +90,14 @@ class CarPriceCalculator
      */
     private function calculateFixedFees(): array
     {
-        $fees = $this->feesRepository->findBy(['type' => 'fixedFee']);
+        $fees = $this->feesRepository->findBy(['type' => FeeTypeName::FIXED_FEE]);
         $calculatedFees = [];
 
         foreach ($fees as $fee) {
             $fixedFees = $fee->getFixedFees();
 
             foreach ($fixedFees as $fixedFee) {
-                $calculatedFees[$fee->getName()] = $fixedFee->getAmount();
+                $calculatedFees[$fee->getName()->value] = $fixedFee->getAmount();
             }
         }
 

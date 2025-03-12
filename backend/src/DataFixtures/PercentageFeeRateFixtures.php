@@ -2,7 +2,10 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Fee;
 use App\Entity\PercentageFeeRate;
+use App\Enum\FeeName;
+use App\Enum\VehicleTypeName;
 use App\Repository\FeesRepository;
 use App\Repository\VehicleTypeRepository;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -30,7 +33,7 @@ class PercentageFeeRateFixtures extends Fixture implements DependentFixtureInter
 
         foreach ($feeRates as $feeRate) {
             $feeRateEntity = new PercentageFeeRate();
-            $feeRateEntity->setFeeId($feeRate['feeId']);
+            $feeRateEntity->setFee($feeRate['fee']);
             $feeRateEntity->setVehicleTypeId($feeRate['vehicleTypeId']);
             $feeRateEntity->setRate($feeRate['rate']);
             $feeRateEntity->setMinAmount($feeRate['minAmount']);
@@ -43,53 +46,53 @@ class PercentageFeeRateFixtures extends Fixture implements DependentFixtureInter
     }
 
     /**
-     * @return array<int, array<string, int|float|null>>
+     * @return array<int, array<string, int|float|null|Fee>>
      * @throws Exception
      */
     private function getFeeRates(): array
     {
-        $basicBuyerFee = $this->feesRepository->findOneBy(['name' => 'Basic Buyer Fee']);
+        $basicBuyerFee = $this->feesRepository->findOneBy(['name' => FeeName::BASIC]);
 
         if (!$basicBuyerFee) {
-            throw new Exception('Basic Buyer Fee not found');
+            throw new Exception(FeeName::BASIC->value . ' not found');
         }
 
-        $sellerSpecialFee = $this->feesRepository->findOneBy(['name' => 'Seller Special Fee']);
+        $sellerSpecialFee = $this->feesRepository->findOneBy(['name' => FeeName::SPECIAL]);
 
         if (!$sellerSpecialFee) {
-            throw new Exception('Seller Special Fee not found');
+            throw new Exception(FeeName::SPECIAL->value . ' not found');
         }
 
-        $commonVehicleType = $this->vehicleTypeRepository->findOneBy(['name' => 'Common']);
+        $commonVehicleType = $this->vehicleTypeRepository->findOneBy(['name' => VehicleTypeName::COMMON]);
         $commonVehicleTypeId = $commonVehicleType->getId();
 
-        $luxuryVehicleType = $this->vehicleTypeRepository->findOneBy(['name' => 'Luxury']);
+        $luxuryVehicleType = $this->vehicleTypeRepository->findOneBy(['name' => VehicleTypeName::LUXURY]);
         $luxuryVehicleTypeId = $luxuryVehicleType->getId();
 
         return [
             [
-                'feeId' => $basicBuyerFee,
+                'fee' => $basicBuyerFee,
                 'vehicleTypeId' => $commonVehicleTypeId,
                 'rate' => 0.1,
                 'minAmount' => 10,
                 'maxAmount' => 50,
             ],
             [
-                'feeId' => $basicBuyerFee,
+                'fee' => $basicBuyerFee,
                 'vehicleTypeId' => $luxuryVehicleTypeId,
                 'rate' => 0.1,
                 'minAmount' => 25,
                 'maxAmount' => 200,
             ],
             [
-                'feeId' => $sellerSpecialFee,
+                'fee' => $sellerSpecialFee,
                 'vehicleTypeId' => $commonVehicleTypeId,
                 'rate' => 0.02,
                 'minAmount' => null,
                 'maxAmount' => null,
             ],
             [
-                'feeId' => $sellerSpecialFee,
+                'fee' => $sellerSpecialFee,
                 'vehicleTypeId' => $luxuryVehicleTypeId,
                 'rate' => 0.04,
                 'minAmount' => null,

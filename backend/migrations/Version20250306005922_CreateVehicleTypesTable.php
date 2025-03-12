@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DoctrineMigrations;
 
+use App\Enum\VehicleTypeName;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 
@@ -23,6 +24,10 @@ final class Version20250306005922CreateVehicleTypesTable extends AbstractMigrati
             'CREATE TABLE vehicle_types (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, name VARCHAR(50) NOT NULL)',
         );
         $this->addSql('CREATE UNIQUE INDEX UNIQ_VEHICLE_TYPE_NAME ON vehicle_types (name)');
+
+        foreach (VehicleTypeName::cases() as $vehicleType) {
+            $this->addSql('INSERT INTO vehicle_types (name) VALUES (?)', [$vehicleType->value]);
+        }
     }
 
     public function down(Schema $schema): void

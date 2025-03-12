@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DoctrineMigrations;
 
+use App\Enum\FeeName;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 
@@ -19,12 +20,15 @@ final class Version20250306141838CreateFeesTable extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('CREATE TABLE fees (
+        $this->addSql(
+            'CREATE TABLE fees (
             id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-            name VARCHAR(50) NOT NULL,
+            name VARCHAR(50) NOT NULL CHECK (name IN (' .
+                implode(', ', array_map(fn($e) => "'" . $e->value . "'", FeeName::cases())) .
+                ')),
             type VARCHAR(50) NOT NULL
-          )');
+        )',
+        );
         $this->addSql('CREATE UNIQUE INDEX UNIQ_FEE_NAME ON fees (name)');
     }
 
