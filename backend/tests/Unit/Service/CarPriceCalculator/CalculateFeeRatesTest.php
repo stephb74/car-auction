@@ -3,31 +3,46 @@
 namespace App\Tests\Unit\Service\CarPriceCalculator;
 
 use App\Entity\VehicleType;
+use App\Enum\FeeName;
+use App\Enum\VehicleTypeName;
 use App\Service\CarPriceCalculator;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\MockObject\MockObject;
 use ReflectionException;
 use ReflectionMethod;
 
 class CalculateFeeRatesTest extends CarPriceCalculatorTestCase
 {
     protected ReflectionMethod $calculateFeeRatesReflection;
-    protected MockObject $feeRateIsApplicable;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->calculateFeeRatesReflection = new ReflectionMethod(CarPriceCalculator::class, 'calculateFeeRates');
+        $this->calculateFeeRatesReflection = new ReflectionMethod(
+            CarPriceCalculator::class,
+            'calculatePercentageRateFees',
+        );
     }
 
     /**
-     * @return array<string, list<float|int|string>>
+     * @return array<string, list<mixed>>
      */
     public static function dataProvider(): array
     {
         return [
-            'Common vehicle type, price $398' => [398, 'Common', 1, 'Basic Buyer Fee', 39.8],
-            'Luxury vehicle type, price $1800' => [1800, 'Luxury', 2, 'Basic Buyer Fee', 180.0],
+            'Common vehicle type, price $398' => [
+                398,
+                VehicleTypeName::COMMON,
+                self::$commonVehicleTypeId,
+                FeeName::BASIC,
+                39.8,
+            ],
+            'Luxury vehicle type, price $1800' => [
+                1800,
+                VehicleTypeName::LUXURY,
+                self::$luxuryVehicleTypeId,
+                FeeName::BASIC,
+                180,
+            ],
         ];
     }
 
@@ -37,20 +52,21 @@ class CalculateFeeRatesTest extends CarPriceCalculatorTestCase
     #[DataProvider('dataProvider')]
     public function testCalculateFeeRates(
         float $vehiclePrice,
-        string $vehicleTypeName,
+        VehicleTypeName $vehicleTypeName,
         int $vehicleTypeId,
-        string $expectedFeeName,
+        FeeName $expectedFeeName,
         float $expectedFeeRate,
     ): void {
+        // Arrange
         $vehicleType = new VehicleType();
         $vehicleType->setName($vehicleTypeName);
         $vehicleType->setId($vehicleTypeId);
 
+        // Act
         $feeRates = $this->calculateFeeRatesReflection->invoke($this->calculator, $vehiclePrice, $vehicleType);
 
-        $this->assertArrayHasKey($expectedFeeName, $feeRates);
-        $this->assertEquals($expectedFeeRate, $feeRates[$expectedFeeName]);
-
-        print_r($feeRates);
+        // Assert
+        $this->assertArrayHasKey($expectedFeeName->value, $feeRates);
+        $this->assertEquals($expectedFeeRate, $feeRates[$expectedFeeName->value]);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enum\VehicleTypeName;
 use App\Repository\VehicleTypeRepository;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -14,8 +15,8 @@ class VehicleType
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 50)]
-    private ?string $name = null;
+    #[ORM\Column(length: 50, enumType: VehicleTypeName::class)]
+    private ?VehicleTypeName $name = null;
 
     public function getId(): ?int
     {
@@ -29,12 +30,12 @@ class VehicleType
         return $this;
     }
 
-    public function getName(): ?string
+    public function getName(): ?VehicleTypeName
     {
         return $this->name;
     }
 
-    public function setName(string $name): static
+    public function setName(VehicleTypeName $name): static
     {
         $this->name = $name;
 

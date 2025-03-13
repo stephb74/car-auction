@@ -4,17 +4,29 @@ declare(strict_types=1);
 
 namespace App\Controller\Api\v1;
 
+use App\Dto\CarPriceCalculatorRequest;
+use App\Entity\VehicleType;
+use App\Service\CarPriceCalculator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
+use Symfony\Component\Routing\Annotation\Route;
 
+#[Route('/api/v1')]
 class CarPriceCalculatorController extends AbstractController
 {
-    #[Route('/api/v1/calculate-car-price')]
-    public function calculate(): JsonResponse
+    private CarPriceCalculator $carPriceCalculator;
+
+    public function __construct(CarPriceCalculator $carPriceCalculator)
     {
-        return $this->json([
-            'price' => 1000,
-        ]);
+        $this->carPriceCalculator = $carPriceCalculator;
+    }
+
+    #[Route('/calculate-car-price/{vehicleType}', methods: ['POST'])]
+    public function calculate(
+        #[MapRequestPayload] CarPriceCalculatorRequest $request,
+        VehicleType $vehicleType,
+    ): JsonResponse {
+        return $this->json($this->carPriceCalculator->calculateAll($request->price, $vehicleType));
     }
 }

@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use App\Enum\FeeName;
+use App\Enum\FeeTypeName;
 use App\Repository\FeesRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -16,11 +18,11 @@ class Fee
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 50)]
-    private ?string $name = null;
+    #[ORM\Column(length: 50, enumType: FeeName::class)]
+    private ?FeeName $name = null;
 
-    #[ORM\Column(length: 50)]
-    private ?string $type = null;
+    #[ORM\Column(length: 50, enumType: FeeTypeName::class)]
+    private ?FeeTypeName $type = null;
 
     /**
      * @var Collection<int, PercentageFeeRate>
@@ -28,9 +30,23 @@ class Fee
     #[ORM\OneToMany(targetEntity: PercentageFeeRate::class, mappedBy: 'fee')]
     private Collection $percentageFeeRates;
 
+    /**
+     * @var Collection<int, FixedFee>
+     */
+    #[ORM\OneToMany(targetEntity: FixedFee::class, mappedBy: 'fee')]
+    private Collection $fixedFees;
+
+    /**
+     * @var Collection<int, FixedTierFee>
+     */
+    #[ORM\OneToMany(targetEntity: FixedTierFee::class, mappedBy: 'fee')]
+    private Collection $fixedTierFees;
+
     public function __construct()
     {
         $this->percentageFeeRates = new ArrayCollection();
+        $this->fixedFees = new ArrayCollection();
+        $this->fixedTierFees = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -45,24 +61,24 @@ class Fee
         return $this;
     }
 
-    public function getName(): ?string
+    public function getName(): ?FeeName
     {
         return $this->name;
     }
 
-    public function setName(string $name): static
+    public function setName(FeeName $name): static
     {
         $this->name = $name;
 
         return $this;
     }
 
-    public function getType(): ?string
+    public function getType(): ?FeeTypeName
     {
         return $this->type;
     }
 
-    public function setType(string $type): static
+    public function setType(FeeTypeName $type): static
     {
         $this->type = $type;
 
@@ -75,5 +91,21 @@ class Fee
     public function getPercentageFeeRates(): Collection
     {
         return $this->percentageFeeRates;
+    }
+
+    /**
+     * @return Collection<int, FixedFee>
+     */
+    public function getFixedFees(): Collection
+    {
+        return $this->fixedFees;
+    }
+
+    /**
+     * @return Collection<int, FixedTierFee>
+     */
+    public function getFixedTierFees(): Collection
+    {
+        return $this->fixedTierFees;
     }
 }
