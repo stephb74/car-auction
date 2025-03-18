@@ -18,7 +18,7 @@ export const validatePrice = (event: KeyboardEvent) => {
   // Allow only up to 2 decimal places
   const valueParts = input.value.split(".");
   if (
-    valueParts[1] &&
+    valueParts.length > 1 &&
     valueParts[1].length >= 2 &&
     event.key !== "Backspace" &&
     event.key !== "Delete"

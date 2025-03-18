@@ -36,44 +36,52 @@
 
 <script setup lang="ts">
 import { ref, defineProps, defineEmits, onMounted } from "vue";
-import { calculateCarPrice, fetchVehicleTypes } from "@/api/vehiclesApiClient";
+import vehicleService from "@/services/VehicleService";
 import { validatePrice } from "@/utils/validation";
 import { ResultTableData, VehicleType } from "@/types/types";
 
-const props = defineProps<{
+defineProps<{
   resultTableData: ResultTableData | null;
 }>();
 
 const emit = defineEmits(["update:resultTableData"]);
 
 // Local state
-const selectedVehicleTypeId = ref();
-const vehicleTypes = ref<VehicleType[] | undefined>([]);
+const selectedVehicleTypeId = ref<number | null>(null);
+const vehicleTypes = ref<VehicleType[]>([]);
 const vehiclePrice = ref(0);
 
 /**
  * Handle form submission
  */
 const handleFormSubmit = async () => {
-  const vehicleType = vehicleTypes.value?.find(
-    (type) => type.id === selectedVehicleTypeId.value
-  );
-
-  if (vehicleType) {
-    const carPriceResult = await calculateCarPrice(
-      vehiclePrice.value,
-      vehicleType.id
+  try {
+    const vehicleType = vehicleTypes.value.find(
+      (type) => type.id === selectedVehicleTypeId.value
     );
 
-    if (carPriceResult) {
-      const resultTableData: ResultTableData = {
-        vehicleTypeName: vehicleType.name,
-        basePrice: vehiclePrice.value,
-        carPriceResult,
-      };
+    if (vehicleType) {
+      const carPriceResult = await vehicleService.calculateCarPrice(
+        vehiclePrice.value,
+        vehicleType.id
+      );
 
-      emit("update:resultTableData", resultTableData);
+      if (carPriceResult) {
+        const resultTableData: ResultTableData = {
+          vehicleTypeName: vehicleType.name,
+          basePrice: vehiclePrice.value,
+          carPriceResult,
+        };
+
+        emit("update:resultTableData", resultTableData);
+      } else {
+        console.error("Car price result not found");
+      }
+    } else {
+      console.error("Vehicle type not found");
     }
+  } catch (error) {
+    console.error("Error in form submission:", error);
   }
 };
 
@@ -81,16 +89,20 @@ const handleFormSubmit = async () => {
  * Reset the form fields
  */
 const reset = () => {
-  selectedVehicleTypeId.value = "";
+  selectedVehicleTypeId.value = null;
   vehiclePrice.value = 0;
   emit("update:resultTableData", null);
 };
 
 onMounted(async () => {
-  vehicleTypes.value = await fetchVehicleTypes();
+  try {
+    vehicleTypes.value = await vehicleService.fetchVehicleTypes();
 
-  if (vehicleTypes.value && vehicleTypes.value.length > 0) {
-    selectedVehicleTypeId.value = vehicleTypes.value[0].id;
+    if (vehicleTypes.value.length > 0) {
+      selectedVehicleTypeId.value = vehicleTypes.value[0].id;
+    }
+  } catch (error) {
+    console.error("Error fetching vehicle types", error);
   }
 });
 </script>

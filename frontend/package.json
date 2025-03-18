@@ -7,7 +7,9 @@
     "build": "vue-cli-service build",
     "test:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint",
-    "lint:css": "stylelint 'src/**/*.{vue,css,scss}' --fix"
+    "lint:css": "stylelint 'src/**/*.{vue,css,scss}' --fix",
+    "test:unit:coverage": "vue-cli-service test:unit --coverage",
+    "test:unit:watch": "vue-cli-service test:unit --watch"
   },
   "dependencies": {
     "axios": "^1.8.3",

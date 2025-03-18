@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { defineProps } from "vue";
-import { ResultTableData } from "@/types";
 import { formatCurrency } from "@/utils/strings";
+import { ResultTableData } from "@/types/types";
 
 const props = defineProps<{
   resultTableData: ResultTableData;
