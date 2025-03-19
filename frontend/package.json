@@ -4,40 +4,58 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
+    "serve:e2e": "vue-cli-service serve --mode e2e --port 8085",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "lint:css": "stylelint 'src/**/*.{vue,css,scss}' --fix",
+    "test:all": "npm run test:e2e:run && npm run test:unit",
+    "test:e2e:open": "start-server-and-test 'npm run serve:e2e' http://localhost:8085 'cypress open'",
+    "test:e2e:run": "start-server-and-test 'npm run serve:e2e' http://localhost:8085 'cypress run --quiet'",
+    "test:unit": "vue-cli-service test:unit",
+    "test:unit:coverage": "vue-cli-service test:unit --coverage",
+    "test:unit:watch": "vue-cli-service test:unit --watch"
   },
   "dependencies": {
+    "axios": "^1.8.3",
     "core-js": "^3.8.3",
     "vue": "^3.2.13"
   },
   "devDependencies": {
-    "@babel/core": "^7.12.16",
-    "@babel/eslint-parser": "^7.12.16",
+    "@cypress/vue": "^6.0.2",
+    "@tsconfig/cypress": "^1.0.2",
+    "@types/jest": "^27.5.2",
+    "@types/node": "^22.13.10",
+    "@typescript-eslint/eslint-plugin": "^5.4.0",
+    "@typescript-eslint/parser": "^5.4.0",
     "@vue/cli-plugin-babel": "~5.0.0",
     "@vue/cli-plugin-eslint": "~5.0.0",
+    "@vue/cli-plugin-typescript": "~5.0.0",
+    "@vue/cli-plugin-unit-jest": "~5.0.0",
     "@vue/cli-service": "~5.0.0",
-    "eslint": "^7.32.0",
-    "eslint-plugin-vue": "^8.0.3"
+    "@vue/eslint-config-typescript": "^9.1.0",
+    "@vue/test-utils": "^2.4.6",
+    "@vue/vue3-jest": "^27.0.0-alpha.1",
+    "autoprefixer": "^10.4.21",
+    "babel-jest": "^27.0.6",
+    "cypress": "^14.2.0",
+    "eslint": "^8.57.1",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-sonarjs": "^3.0.2",
+    "eslint-plugin-vue": "^8.0.3",
+    "jest": "^27.0.5",
+    "lint-staged": "^11.1.2",
+    "prettier": "^2.4.1",
+    "sass": "^1.32.7",
+    "sass-loader": "^12.0.0",
+    "start-server-and-test": "^2.0.11",
+    "stylelint": "^16.16.0",
+    "stylelint-config-recommended-vue": "^1.6.0",
+    "stylelint-config-standard": "^37.0.0",
+    "ts-jest": "^27.0.4",
+    "typescript": "~4.5.5"
   },
-  "eslintConfig": {
-    "root": true,
-    "env": {
-      "node": true
-    },
-    "extends": [
-      "plugin:vue/vue3-essential",
-      "eslint:recommended"
-    ],
-    "parserOptions": {
-      "parser": "@babel/eslint-parser"
-    },
-    "rules": {}
-  },
-  "browserslist": [
-    "> 1%",
-    "last 2 versions",
-    "not dead",
-    "not ie 11"
-  ]
+  "gitHooks": {
+    "pre-commit": "lint-staged"
+  }
 }

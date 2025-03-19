@@ -1,0 +1,18 @@
+{
+  "extends": [
+    "stylelint-config-standard",
+    "stylelint-config-recommended-vue"
+  ],
+  "overrides": [
+    {
+      "files": ["**/*.{vue,css,scss,pcss}"],
+      "customSyntax": "postcss-html"
+    }
+  ],
+  "rules": {
+    "at-rule-empty-line-before": null,
+    "comment-empty-line-before": null,
+    "declaration-empty-line-before": null,
+    "rule-empty-line-before": null
+  }
+}
