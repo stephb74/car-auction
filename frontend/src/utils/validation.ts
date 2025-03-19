@@ -3,26 +3,35 @@
  * @param event
  */
 export const validatePrice = (event: KeyboardEvent) => {
-  const input = event.target as HTMLInputElement;
-  const invalidChars = /[^0-9.]/;
+  const target = event.target as HTMLInputElement;
 
-  // Allow only numbers, decimal point, backspace, and delete
+  // Allow backspace, delete, arrow keys, and tab
   if (
-    invalidChars.test(event.key) &&
-    event.key !== "Backspace" &&
-    event.key !== "Delete"
+    event.key === "Backspace" ||
+    event.key === "Delete" ||
+    event.key === "ArrowLeft" ||
+    event.key === "ArrowRight" ||
+    event.key === "Tab"
   ) {
+    return;
+  }
+
+  // Prevent negative values
+  if (event.key === "-") {
     event.preventDefault();
+    return;
+  }
+
+  // Allow only one decimal point
+  if (event.key === "." && target.value.includes(".")) {
+    event.preventDefault();
+    return;
   }
 
   // Allow only up to 2 decimal places
-  const valueParts = input.value.split(".");
-  if (
-    valueParts.length > 1 &&
-    valueParts[1].length >= 2 &&
-    event.key !== "Backspace" &&
-    event.key !== "Delete"
-  ) {
+  const decimalIndex = target.value.indexOf(".");
+  if (decimalIndex !== -1 && target.value.length - decimalIndex > 2) {
     event.preventDefault();
+    return;
   }
 };

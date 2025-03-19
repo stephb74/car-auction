@@ -46,6 +46,18 @@ button:active {
   box-shadow: none;
 }
 
+button:disabled {
+  background-color: #ccc;
+  color: #666;
+  border: 1px solid #999;
+}
+
+button:disabled:hover {
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
 .submit-btn {
   background-color: #78bc61;
   color: #ffffff;

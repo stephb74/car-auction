@@ -18,7 +18,24 @@ describe("validatePrice", () => {
     expect(event.preventDefault).not.toHaveBeenCalled();
   });
 
-  it("should allow backspace and delete", () => {
+  it("should prevent negative values", () => {
+    // Arrange
+    const event = {
+      key: "-",
+      target: {
+        value: "1",
+      },
+      preventDefault: jest.fn(),
+    } as unknown as KeyboardEvent;
+
+    // Act
+    validatePrice(event);
+
+    // Assert
+    expect(event.preventDefault).toHaveBeenCalled();
+  });
+
+  it("should allow the backspace key", () => {
     // Arrange
     const event = {
       key: "Backspace",
@@ -35,12 +52,13 @@ describe("validatePrice", () => {
     expect(event.preventDefault).not.toHaveBeenCalled();
   });
 
-  it("should prevent invalid characters", () => {
+  it("should prevent entering multiple decimal points", () => {
     // Arrange
     const event = {
-      key: "a",
+      key: ".",
       target: {
-        value: "1",
+        value: "1.0",
+        includes: jest.fn().mockReturnValue(true),
       },
       preventDefault: jest.fn(),
     } as unknown as KeyboardEvent;
@@ -57,7 +75,8 @@ describe("validatePrice", () => {
     const event = {
       key: "1",
       target: {
-        value: "1.23",
+        value: "1.00",
+        indexOf: jest.fn().mockReturnValue(1),
       },
       preventDefault: jest.fn(),
     } as unknown as KeyboardEvent;
@@ -67,39 +86,5 @@ describe("validatePrice", () => {
 
     // Assert
     expect(event.preventDefault).toHaveBeenCalled();
-  });
-
-  it("should prevent more than 2 decimal places", () => {
-    // Arrange
-    const event = {
-      key: "4",
-      target: {
-        value: "1.23",
-      },
-      preventDefault: jest.fn(),
-    } as unknown as KeyboardEvent;
-
-    // Act
-    validatePrice(event);
-
-    // Assert
-    expect(event.preventDefault).toHaveBeenCalled();
-  });
-
-  it("should allow backspace and delete when more than 2 decimal places", () => {
-    // Arrange
-    const event = {
-      key: "Backspace",
-      target: {
-        value: "1.234",
-      },
-      preventDefault: jest.fn(),
-    } as unknown as KeyboardEvent;
-
-    // Act
-    validatePrice(event);
-
-    // Assert
-    expect(event.preventDefault).not.toHaveBeenCalled();
   });
 });
