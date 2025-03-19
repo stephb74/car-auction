@@ -9,10 +9,13 @@ defineProps<{
 </script>
 
 <template>
-  <button type="reset" class="reset-button" @click="resetForm">Reset</button>
+  <button type="reset" class="reset-button" @click="resetForm" id="reset-btn">
+    Reset
+  </button>
   <button
     type="button"
-    class="submit-btn"
+    class="submit-button"
+    id="submit-btn"
     @click="handleFormSubmit"
     :disabled="!formIsValid"
   >

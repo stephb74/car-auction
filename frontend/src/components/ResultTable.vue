@@ -30,7 +30,9 @@ const feeKeys = [
     <tbody>
       <tr>
         <td class="currency">
-          {{ formatCurrency(resultTableData.basePrice, "$") }}
+          <strong>
+            {{ formatCurrency(resultTableData.basePrice, "$") }}
+          </strong>
         </td>
         <td>{{ resultTableData.vehicleTypeName }}</td>
         <td
@@ -55,7 +57,9 @@ const feeKeys = [
           {{ formatCurrency(value, "$") }}
         </td>
         <td class="currency">
-          {{ formatCurrency(resultTableData.carPriceResult.total, "$") }}
+          <strong>
+            {{ formatCurrency(resultTableData.carPriceResult.total, "$") }}
+          </strong>
         </td>
       </tr>
     </tbody>
@@ -83,7 +87,7 @@ const feeKeys = [
   text-align: center;
 }
 
-.currency {
+#result-table .currency {
   text-align: right;
 }
 </style>

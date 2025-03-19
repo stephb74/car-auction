@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineProps, defineEmits, watch } from "vue";
+import { defineProps, defineEmits } from "vue";
 import type { VehicleType } from "@/types/types"; // Import the type correctly
 
 defineProps<{
