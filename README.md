@@ -8,7 +8,10 @@ The Car Bid Calculation Tool is a web application designed to help buyers calcul
     1. [Backend](#backend)
     2. [Frontend](#frontend)
 2. [Starting the Application](#starting-the-application)
-3. Architecture Decision Records (ADRs)
+3. [Testing](docs/testing.md)
+    1. [Backend](docs/testing.md#backend)
+    2. [Frontend](docs/testing.md#frontend)
+4. Architecture Decision Records (ADRs)
     1. [ADR-1: Use of SQLite](docs/backend/adr-1-use-of-sqlite.md)
 
 ### Installation
@@ -49,28 +52,3 @@ To start the Car Bid Calculation Tool, follow these steps:
 
 3. Open your browser and navigate to `http://localhost:8080` to access the application.
 
-### Running the Tests
-
-To run the tests for the Car Bid Calculation Tool, follow these steps:
-
-#### Backend
-
-1. Navigate to the `/backend` directory.
-2. Run the following command:
-
-    `composer run test`
-
-#### Frontend
-
-1. Navigate to the `frontend` directory.
-2. Run the following command to run unit tests:
-
-    `npm run test:unit:coverage`
-
-3. Run the following command to run end-to-end tests:
-
-    `npm run test:e2e:run`
-
-4. Run the following command to open the end-to-end test runner:
-
-    `npm run test:e2e:open`
