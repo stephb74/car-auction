@@ -1,5 +1,7 @@
 # Running the Tests
 
+Table of Contents (../README.md)
+
 To run the tests for the Car Bid Calculation Tool, follow these steps:
 
 ## Backend
