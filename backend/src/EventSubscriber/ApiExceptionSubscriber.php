@@ -9,6 +9,10 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 
+/**
+ * Class ApiExceptionSubscriber
+ * This class is responsible for handling exceptions and returning a JSON response instead of the default HTML response.
+ */
 class ApiExceptionSubscriber implements EventSubscriberInterface
 {
     public static function getSubscribedEvents(): array
