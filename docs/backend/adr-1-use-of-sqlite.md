@@ -1,5 +1,7 @@
 # ADR-1: Use of SQLite
 
+<span style="font-size: 15px;">← Back to [Table of Contents](../README.md)</span>
+
 ## Context
 
 The application uses various types of fixed and variable to costs to calculate
