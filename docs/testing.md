@@ -1,6 +1,6 @@
 # Running the Tests
 
-Table of Contents(../README.md)
+<span style="font-size: 15px;">← Back to [Table of Contents](../README.md)</span>
 
 To run the tests for the Car Bid Calculation Tool, follow these steps:
 
