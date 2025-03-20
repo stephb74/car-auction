@@ -1,6 +1,6 @@
 # ADR-1: Use of SQLite
 
-<span style="font-size: 15px;">← Back to [Table of Contents](../README.md)</span>
+<span style="font-size: 15px;">← Back to [Table of Contents](../../README.md)</span>
 
 ## Context
 
